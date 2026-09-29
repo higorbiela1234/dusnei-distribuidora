@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #e2e8f0;
+  background-color: #101917;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: #101917;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #101917;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+h1, h2, h3 {
+  font-family: 'Manrope', 'DM Sans', sans-serif;
+}
+
+input[type='date'], input[type='number'] {
+  color-scheme: dark;
+}
+
+@media print {
+  body, #root { background: #fff !important; color: #111 !important; }
+  body * { visibility: hidden; }
+  .no-print, aside, header, footer { display: none !important; }
+  .printable, .printable * { visibility: visible; }
+  .printable { position: fixed !important; inset: 0 !important; z-index: 9999 !important; width: 100mm !important; max-width: none !important; margin: auto !important; border-radius: 0 !important; }
+  .print-badge { position: absolute !important; inset: auto !important; top: 50% !important; left: 50% !important; width: 86mm !important; height: 54mm !important; transform: translate(-50%, -50%) !important; border-radius: 3mm !important; }
+  .print-receipt { min-height: 100mm; padding: 12mm !important; border: 1px solid #aaa !important; }
+  main { margin: 0 !important; max-width: none !important; padding: 0 !important; }
+  .print-surface { border: 0 !important; background: #fff !important; color: #111 !important; box-shadow: none !important; }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
