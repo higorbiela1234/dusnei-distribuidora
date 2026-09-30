@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-interface UserModalProps {
+interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  user: any;
 }
 
 const AVAILABLE_UNITS = [
@@ -15,29 +16,38 @@ const AVAILABLE_UNITS = [
   '05 - Dusnei / Cascavel'
 ];
 
-export function UserModal({ isOpen, onClose, onSuccess }: UserModalProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+export function EditUserModal({ isOpen, onClose, onSuccess, user }: EditUserModalProps) {
+  const [displayName, setDisplayName] = useState('');
   const [role, setRole] = useState('ADMINISTRATIVO');
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
   const [permissions, setPermissions] = useState({
     dashboard: true,
-    funcionarios: true,
+    funcionarios: false,
     rh: false,
     epi: false,
     diarias: false,
     crachas: false,
     relatorios: false,
-    canCreate: true,
-    canEdit: true,
+    canCreate: false,
+    canEdit: false,
     canDelete: false,
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.full_name || user.nome || '');
+      setRole(user.role || 'ADMINISTRATIVO');
+      setSelectedUnits(user.units || []);
+      if (user.permissions) {
+        setPermissions(prev => ({ ...prev, ...user.permissions }));
+      }
+    }
+  }, [user]);
+
+  if (!isOpen || !user) return null;
 
   const handleUnitToggle = (unit: string) => {
     setSelectedUnits(prev =>
@@ -49,41 +59,39 @@ export function UserModal({ isOpen, onClose, onSuccess }: UserModalProps) {
     setPermissions(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            role: role,
-            units: selectedUnits,
-            permissions: permissions,
-          },
-        },
-      });
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: displayName,
+          role: role,
+          units: selectedUnits,
+          permissions: permissions,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
 
-      if (signUpError) throw signUpError;
+      if (updateError) throw updateError;
 
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Erro ao criar o utilizador.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl p-6 text-slate-100 shadow-2xl my-8">
         <div className="flex justify-between items-center pb-4 border-b border-slate-800">
-          <h3 className="text-xl font-bold text-white">Criar Novo Utilizador</h3>
+          <h3 className="text-xl font-bold text-white">Editar Utilizador: {user.email || displayName}</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-white text-xl font-bold px-2 cursor-pointer">✕</button>
         </div>
 
@@ -93,42 +101,22 @@ export function UserModal({ isOpen, onClose, onSuccess }: UserModalProps) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <form onSubmit={handleUpdate} className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Nome Completo</label>
             <input
               type="text"
               required
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
+              value={displayName}
+              onChange={e => setDisplayName(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">E-mail</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Palavra-passe</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Perfil de Acesso</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              Perfil de Acesso
+            </label>
             <select
               value={role}
               onChange={e => setRole(e.target.value)}
@@ -226,7 +214,7 @@ export function UserModal({ isOpen, onClose, onSuccess }: UserModalProps) {
               disabled={loading}
               className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition shadow-lg shadow-indigo-600/30 disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'A criar...' : 'Criar Utilizador'}
+              {loading ? 'A atualizar...' : 'Guardar Alterações'}
             </button>
           </div>
         </form>

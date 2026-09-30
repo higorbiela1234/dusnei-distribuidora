@@ -97,7 +97,12 @@ export function AppLayout() {
       <div className="mt-auto border-t border-white/10 pt-5">
         <div className="flex items-center gap-3 px-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d6a36c] text-xs font-semibold text-[#33271c]">HB</div>
-          <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-white">{profile?.display_name || session?.user.email}</p><p className="text-xs text-slate-400">{profile ? roleLabels[profile.role] : ''}</p></div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-white">
+              {profile?.full_name || profile?.display_name || session?.user.email}
+            </p>
+            <p className="text-xs text-slate-400">{profile ? roleLabels[profile.role] : ''}</p>
+          </div>
         </div>
         <button type="button" onClick={() => void signOut()} className="mt-4 inline-flex w-full items-center gap-2 rounded-lg px-2 py-2 text-xs text-slate-400 hover:bg-white/[0.06] hover:text-white"><LogOut className="h-3.5 w-3.5" />Sair</button>
       </div>
