@@ -1,5 +1,5 @@
-import React from 'react';
-// import Head from 'next/head';
+// import React from 'react';
+// // import Head from 'next/head';
 import { AdmissaoModule } from '../components/rh/AdmissaoModule';
 import { AtestadosModule } from '../components/rh/AtestadosModule';
 
