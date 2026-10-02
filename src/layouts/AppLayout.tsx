@@ -99,7 +99,7 @@ export function AppLayout() {
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d6a36c] text-xs font-semibold text-[#33271c]">HB</div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-white">
-              {profile?.full_name || profile?.display_name || session?.user.email}
+              {profile?.display_name || session?.user.email}
             </p>
             <p className="text-xs text-slate-400">{profile ? roleLabels[profile.role] : ''}</p>
           </div>

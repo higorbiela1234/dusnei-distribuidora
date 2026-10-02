@@ -1,7 +1,7 @@
 import React from 'react';
-import Head from 'next/head';
-import { AdmissaoModule } from '@/components/rh/AdmissaoModule';
-import { AtestadosModule } from '@/components/rh/AtestadosModule';
+// import Head from 'next/head';
+import { AdmissaoModule } from '../components/rh/AdmissaoModule';
+import { AtestadosModule } from '../components/rh/AtestadosModule';
 
 export default function RHManagementPage() {
   return (
