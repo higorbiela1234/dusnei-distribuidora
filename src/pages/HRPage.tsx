@@ -9,7 +9,7 @@ import {
   FileUp,
   Search,
 } from "lucide-react";
-import { useState, useEffect, type FormEvent } from "react";
+import React, { useState, useEffect, type FormEvent } from "react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 
@@ -22,6 +22,7 @@ export function HRPage() {
 
   const [isEtapaModalOpen, setIsEtapaModalOpen] = useState(false);
   const [processoSelecionadoId, setProcessoSelecionadoId] = useState<string | null>(null);
+  const [tipoProcessoAtivo, setTipoProcessoAtivo] = useState<"admissao" | "demissao">("admissao");
   const [novaEtapaTitulo, setNovaEtapaTitulo] = useState("");
 
   // Estado para armazenar os funcionários vindos da base centralizada (localStorage)
@@ -230,6 +231,7 @@ export function HRPage() {
   // Abrir modal customizado de nova etapa
   const abrirModalNovaEtapa = (processoId: string, tipo: "admissao" | "demissao") => {
     setProcessoSelecionadoId(processoId);
+    setTipoProcessoAtivo(tipo);
     setNovaEtapaTitulo("");
     setIsEtapaModalOpen(true);
   };
@@ -239,6 +241,7 @@ export function HRPage() {
     e.preventDefault();
     if (!novaEtapaTitulo.trim() || !processoSelecionadoId) return;
 
+    if (tipoProcessoAtivo === "admissao") {
       setProcessosAdmissao(processosAdmissao.map(proc => {
         if (proc.id === processoSelecionadoId) {
           return {
@@ -272,6 +275,7 @@ export function HRPage() {
   };
 
   // Função para remover etapa individual do checklist
+  const removerEtapa = (processoId: string, etapaId: string, tipo: "admissao" | "demissao") => {
     if (tipo === "admissao") {
       setProcessosAdmissao(processosAdmissao.map(proc => {
         if (proc.id === processoId) {
@@ -295,6 +299,7 @@ export function HRPage() {
     }
   };
 
+  const removerProcessoCompleto = (processoId: string, nomeCandidato: string, tipo: "admissao" | "demissao") => {
     if (confirm(`Tem certeza que deseja excluir o checklist de ${tipo === "admissao" ? "admissão" : "demissão"} de ${nomeCandidato}?`)) {
       if (tipo === "admissao") {
         setProcessosAdmissao(processosAdmissao.filter(proc => proc.id !== processoId));
@@ -548,9 +553,6 @@ export function HRPage() {
         {/* ABA: ADMISSÕES */}
         {activeTab === "admissoes" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-            </div>
-
             <div className="grid grid-cols-1 gap-6">
               {processosAdmissaoFiltrados.length === 0 ? (
                 <div className="py-12 text-center text-slate-500">
@@ -587,6 +589,7 @@ export function HRPage() {
                             </Button>
 
                             <button
+                              onClick={() => removerProcessoCompleto(proc.id, proc.candidato, "admissao")}
                               className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 p-1.5 rounded-lg transition"
                               title="Excluir checklist completo"
                             >
@@ -611,6 +614,7 @@ export function HRPage() {
                               className="flex items-center gap-3 flex-1 cursor-pointer overflow-hidden pr-2"
                             >
                               {etapa.concluido ? (
+                                <Circle className="text-[#8b5cf6] fill-[#8b5cf6] flex-shrink-0" size={18} />
                               ) : (
                                 <Circle className="text-slate-500 flex-shrink-0" size={18} />
                               )}
@@ -620,6 +624,7 @@ export function HRPage() {
                             </div>
 
                             <button
+                              onClick={() => removerEtapa(proc.id, etapa.id, "admissao")}
                               className="text-slate-500 hover:text-red-400 transition p-1"
                               title="Remover etapa"
                             >
@@ -639,9 +644,6 @@ export function HRPage() {
         {/* ABA: DEMISSÕES */}
         {activeTab === "demissoes" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-            </div>
-
             <div className="grid grid-cols-1 gap-6">
               {processosDemissaoFiltrados.length === 0 ? (
                 <div className="py-12 text-center text-slate-500">
@@ -678,6 +680,7 @@ export function HRPage() {
                             </Button>
 
                             <button
+                              onClick={() => removerProcessoCompleto(proc.id, proc.candidato, "demissao")}
                               className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 p-1.5 rounded-lg transition"
                               title="Excluir checklist completo"
                             >
@@ -702,6 +705,7 @@ export function HRPage() {
                               className="flex items-center gap-3 flex-1 cursor-pointer overflow-hidden pr-2"
                             >
                               {etapa.concluido ? (
+                                <Circle className="text-[#8b5cf6] fill-[#8b5cf6] flex-shrink-0" size={18} />
                               ) : (
                                 <Circle className="text-slate-500 flex-shrink-0" size={18} />
                               )}
@@ -711,6 +715,7 @@ export function HRPage() {
                             </div>
 
                             <button
+                              onClick={() => removerEtapa(proc.id, etapa.id, "demissao")}
                               className="text-slate-500 hover:text-red-400 transition p-1"
                               title="Remover etapa"
                             >
@@ -924,6 +929,7 @@ export function HRPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#121c19] p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+              <h2 className="text-lg font-semibold text-white">Adicionar Nova Etapa</h2>
               <button onClick={() => setIsEtapaModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
