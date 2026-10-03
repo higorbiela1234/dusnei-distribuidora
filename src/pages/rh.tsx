@@ -1,14 +1,11 @@
 // import React from 'react';
-// // import Head from 'next/head';
 import { AdmissaoModule } from '../components/rh/AdmissaoModule';
 import { AtestadosModule } from '../components/rh/AtestadosModule';
 
 export default function RHManagementPage() {
   return (
     <>
-      <Head>
         <title>Gestão de RH - Dusnei Distribuidora</title>
-      </Head>
       <main className="min-h-screen bg-slate-100 p-8">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="border-b border-slate-200 pb-4">

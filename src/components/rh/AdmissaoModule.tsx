@@ -32,9 +32,9 @@ export function AdmissaoModule() {
   ])
 
   const toggleEtapa = (processoId: string, etapaId: string) => {
-    setProcessos(processos.map(proc => {
+    setProcessos(processos.map((proc: any) => {
       if (proc.id === processoId) {
-        const novasEtapas = proc.etapas.map(etp => 
+        const novasEtapas = proc.etapas.map((etp: any) => 
           etp.id === etapaId ? { ...etp, concluido: !etp.concluido } : etp
         )
         return { ...proc, etapas: novasEtapas }
@@ -51,8 +51,8 @@ export function AdmissaoModule() {
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        {processos.map(proc => {
-          const concluidas = proc.etapas.filter(e => e.concluido).length
+        {processos.map((proc: any) => {
+          const concluidas = proc.etapas.filter((e: any) => e.concluido).length
           const total = proc.etapas.length
           const progresso = Math.round((concluidas / total) * 100)
 
@@ -72,7 +72,7 @@ export function AdmissaoModule() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                {proc.etapas.map(etapa => (
+                {proc.etapas.map((etapa: any) => (
                   <div
                     key={etapa.id}
                     onClick={() => toggleEtapa(proc.id, etapa.id)}

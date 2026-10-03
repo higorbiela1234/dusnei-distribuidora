@@ -1,21 +1,13 @@
 import {
-  AlertTriangle,
-  CalendarClock,
-  Check,
-  FileText,
   Plus,
   Sparkles,
   Trash2,
-  Edit,
   Eye,
-  Download,
   Printer,
-  CheckCircle2,
   Circle,
   Upload,
   FileUp,
   Search,
-  Stethoscope
 } from "lucide-react";
 import { useState, useEffect, type FormEvent } from "react";
 import { Button } from "../components/ui/Button";
@@ -28,10 +20,8 @@ export function HRPage() {
   // Estado para o campo de pesquisa global do topo
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  // Estado para controlar o modal de Nova Etapa no Checklist (Admissões e Demissões)
   const [isEtapaModalOpen, setIsEtapaModalOpen] = useState(false);
   const [processoSelecionadoId, setProcessoSelecionadoId] = useState<string | null>(null);
-  const [tipoChecklistModal, setTipoChecklistModal] = useState<"admissao" | "demissao">("admissao");
   const [novaEtapaTitulo, setNovaEtapaTitulo] = useState("");
 
   // Estado para armazenar os funcionários vindos da base centralizada (localStorage)
@@ -156,7 +146,6 @@ export function HRPage() {
     }
   ]);
 
-  // Estados para Admissões (Checklist)
   const [processosAdmissao, setProcessosAdmissao] = useState([
     {
       id: "1",
@@ -180,7 +169,6 @@ export function HRPage() {
     }
   ]);
 
-  // Estados para Demissões (Checklist)
   const [processosDemissao, setProcessosDemissao] = useState([
     {
       id: "d1",
@@ -242,7 +230,6 @@ export function HRPage() {
   // Abrir modal customizado de nova etapa
   const abrirModalNovaEtapa = (processoId: string, tipo: "admissao" | "demissao") => {
     setProcessoSelecionadoId(processoId);
-    setTipoChecklistModal(tipo);
     setNovaEtapaTitulo("");
     setIsEtapaModalOpen(true);
   };
@@ -252,7 +239,6 @@ export function HRPage() {
     e.preventDefault();
     if (!novaEtapaTitulo.trim() || !processoSelecionadoId) return;
 
-    if (tipoChecklistModal === "admissao") {
       setProcessosAdmissao(processosAdmissao.map(proc => {
         if (proc.id === processoSelecionadoId) {
           return {
@@ -286,7 +272,6 @@ export function HRPage() {
   };
 
   // Função para remover etapa individual do checklist
-  const handleRemoverEtapaChecklist = (processoId: string, etapaId: string, tipo: "admissao" | "demissao") => {
     if (tipo === "admissao") {
       setProcessosAdmissao(processosAdmissao.map(proc => {
         if (proc.id === processoId) {
@@ -310,8 +295,6 @@ export function HRPage() {
     }
   };
 
-  // Função para excluir o Checklist inteiro
-  const handleExcluirChecklist = (processoId: string, nomeCandidato: string, tipo: "admissao" | "demissao") => {
     if (confirm(`Tem certeza que deseja excluir o checklist de ${tipo === "admissao" ? "admissão" : "demissão"} de ${nomeCandidato}?`)) {
       if (tipo === "admissao") {
         setProcessosAdmissao(processosAdmissao.filter(proc => proc.id !== processoId));
@@ -566,7 +549,6 @@ export function HRPage() {
         {activeTab === "admissoes" && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">Checklist de Integração e Admissão</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-6">
@@ -605,7 +587,6 @@ export function HRPage() {
                             </Button>
 
                             <button
-                              onClick={() => handleExcluirChecklist(proc.id, proc.candidato, "admissao")}
                               className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 p-1.5 rounded-lg transition"
                               title="Excluir checklist completo"
                             >
@@ -630,7 +611,6 @@ export function HRPage() {
                               className="flex items-center gap-3 flex-1 cursor-pointer overflow-hidden pr-2"
                             >
                               {etapa.concluido ? (
-                                <CheckCircle2 className="text-[#8b5cf6] flex-shrink-0" size={18} />
                               ) : (
                                 <Circle className="text-slate-500 flex-shrink-0" size={18} />
                               )}
@@ -640,7 +620,6 @@ export function HRPage() {
                             </div>
 
                             <button
-                              onClick={() => handleRemoverEtapaChecklist(proc.id, etapa.id, "admissao")}
                               className="text-slate-500 hover:text-red-400 transition p-1"
                               title="Remover etapa"
                             >
@@ -661,7 +640,6 @@ export function HRPage() {
         {activeTab === "demissoes" && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">Checklist de Rescisão e Demissão</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-6">
@@ -700,7 +678,6 @@ export function HRPage() {
                             </Button>
 
                             <button
-                              onClick={() => handleExcluirChecklist(proc.id, proc.candidato, "demissao")}
                               className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 p-1.5 rounded-lg transition"
                               title="Excluir checklist completo"
                             >
@@ -725,7 +702,6 @@ export function HRPage() {
                               className="flex items-center gap-3 flex-1 cursor-pointer overflow-hidden pr-2"
                             >
                               {etapa.concluido ? (
-                                <CheckCircle2 className="text-[#8b5cf6] flex-shrink-0" size={18} />
                               ) : (
                                 <Circle className="text-slate-500 flex-shrink-0" size={18} />
                               )}
@@ -735,7 +711,6 @@ export function HRPage() {
                             </div>
 
                             <button
-                              onClick={() => handleRemoverEtapaChecklist(proc.id, etapa.id, "demissao")}
                               className="text-slate-500 hover:text-red-400 transition p-1"
                               title="Remover etapa"
                             >
@@ -945,12 +920,10 @@ export function HRPage() {
 
       </div>
 
-      {/* Modal para Adicionar Etapa no Checklist */}
       {isEtapaModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#121c19] p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-              <h2 className="text-lg font-semibold text-white">Adicionar Nova Etapa ({tipoChecklistModal === "admissao" ? "Admissão" : "Demissão"})</h2>
               <button onClick={() => setIsEtapaModalOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
