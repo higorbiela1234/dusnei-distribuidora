@@ -386,7 +386,6 @@ export function HRPage() {
     setNomeFicheiroAnexado("");
   };
 
-  // Funções para Atestados e ASO
   const handleVerAnexo = (item: any) => {
     alert(`Visualizando anexo de registo ocupacional / atestado de: ${item.colaboradorNome || item.funcionario}`);
   };
@@ -773,18 +772,31 @@ export function HRPage() {
                         <td className="py-3 px-4">{new Date(item.dataRealizacao).toLocaleDateString("pt-BR")}</td>
                         <td className="py-3 px-4 font-semibold text-white">{new Date(item.validade).toLocaleDateString("pt-BR")}</td>
                         <td className="py-3 px-4 text-xs text-slate-400">{item.medico}</td>
-                        <td className="py-3 px-4 text-center space-x-2">
+                        <td className="py-3 px-4 text-center space-x-1">
                           <button 
                             onClick={() => handleVerAnexo(item)}
-                            className="text-[#8b5cf6] hover:text-[#7c3aed] font-medium text-xs bg-[#8b5cf6]/10 px-3 py-1.5 rounded transition border border-[#8b5cf6]/20 inline-flex items-center gap-1"
+                            className="text-[#8b5cf6] hover:text-[#7c3aed] font-medium text-xs bg-[#8b5cf6]/10 px-2.5 py-1.5 rounded transition border border-[#8b5cf6]/20 inline-flex items-center gap-1"
+                            title="Ver Anexo"
                           >
-                            <Eye size={14} /> Ver Anexo
+                            <Eye size={14} /> Ver
                           </button>
                           <button 
                             onClick={() => handleImprimirDocumento(item)}
-                            className="text-slate-300 hover:text-white font-medium text-xs bg-white/10 px-3 py-1.5 rounded transition border border-white/10 inline-flex items-center gap-1"
+                            className="text-slate-300 hover:text-white font-medium text-xs bg-white/10 px-2.5 py-1.5 rounded transition border border-white/10 inline-flex items-center gap-1"
+                            title="Imprimir"
                           >
                             <Printer size={14} /> Imprimir
+                          </button>
+                          <button 
+                            onClick={() => {
+                              if (confirm(`Deseja remover o ASO de ${item.colaboradorNome}?`)) {
+                                setAsoList(asoList.filter(a => a.id !== item.id));
+                              }
+                            }}
+                            className="text-red-400 hover:text-red-300 font-medium text-xs bg-red-500/10 px-2.5 py-1.5 rounded transition border border-red-500/20 inline-flex items-center gap-1"
+                            title="Remover registo"
+                          >
+                            <Trash2 size={14} /> Remover
                           </button>
                         </td>
                       </tr>
@@ -836,18 +848,31 @@ export function HRPage() {
                           <div className="text-white font-medium">{item.cid || "N/I"}</div>
                           <div className="text-xs text-slate-400">{item.medico}</div>
                         </td>
-                        <td className="py-3 px-4 text-center space-x-2">
+                        <td className="py-3 px-4 text-center space-x-1">
                           <button 
                             onClick={() => handleVerAnexo(item)}
-                            className="text-[#8b5cf6] hover:text-[#7c3aed] font-medium text-xs bg-[#8b5cf6]/10 px-3 py-1.5 rounded transition border border-[#8b5cf6]/20 inline-flex items-center gap-1"
+                            className="text-[#8b5cf6] hover:text-[#7c3aed] font-medium text-xs bg-[#8b5cf6]/10 px-2.5 py-1.5 rounded transition border border-[#8b5cf6]/20 inline-flex items-center gap-1"
+                            title="Ver Anexo"
                           >
-                            <Eye size={14} /> Ver Anexo
+                            <Eye size={14} /> Ver
                           </button>
                           <button 
                             onClick={() => handleImprimirDocumento(item)}
-                            className="text-slate-300 hover:text-white font-medium text-xs bg-white/10 px-3 py-1.5 rounded transition border border-white/10 inline-flex items-center gap-1"
+                            className="text-slate-300 hover:text-white font-medium text-xs bg-white/10 px-2.5 py-1.5 rounded transition border border-white/10 inline-flex items-center gap-1"
+                            title="Imprimir"
                           >
                             <Printer size={14} /> Imprimir
+                          </button>
+                          <button 
+                            onClick={() => {
+                              if (confirm(`Deseja remover o atestado de ${item.colaboradorNome}?`)) {
+                                setAtestadosList(atestadosList.filter(a => a.id !== item.id));
+                              }
+                            }}
+                            className="text-red-400 hover:text-red-300 font-medium text-xs bg-red-500/10 px-2.5 py-1.5 rounded transition border border-red-500/20 inline-flex items-center gap-1"
+                            title="Remover registo"
+                          >
+                            <Trash2 size={14} /> Remover
                           </button>
                         </td>
                       </tr>
@@ -891,13 +916,13 @@ export function HRPage() {
                       <td className="py-3 px-4 text-right space-x-2">
                         <button 
                           onClick={() => baixarAnexoPDF(reg)}
-                          className="text-red-400 hover:text-red-300 text-xs font-medium bg-red-500/10 px-2 py-1 rounded border border-red-500/20 transition"
+                          className="text-red-400 hover:text-red-300 text-xs font-medium bg-red-500/10 px-2.5 py-1 rounded border border-red-500/20 transition"
                         >
                           PDF
                         </button>
                         <button 
                           onClick={() => baixarAnexoWord(reg)}
-                          className="text-blue-400 hover:text-blue-300 text-xs font-medium bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 transition"
+                          className="text-blue-400 hover:text-blue-300 text-xs font-medium bg-blue-500/10 px-2.5 py-1 rounded border border-blue-500/20 transition"
                         >
                           Word
                         </button>
