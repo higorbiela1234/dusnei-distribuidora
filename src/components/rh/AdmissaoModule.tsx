@@ -1,102 +1,128 @@
-"use client"
+import React, { useState } from 'react';
 
-// import React, { useState } from "react"
-import { CheckCircle2, Circle } from "lucide-react"
-
-interface ChecklistItem {
-  id: string
-  titulo: string
-  concluido: boolean
-}
-
-interface ProcessoAdmissao {
-  id: string
-  candidato: string
-  cargo: string
-  etapas: ChecklistItem[]
+// Definição da interface para os registos de admissão
+interface AdmissaoRecord {
+  id: string;
+  colaboradorNome: string;
+  cargo: string;
+  departamento: string;
+  dataAdmissao: string;
+  status: string;
 }
 
 export function AdmissaoModule() {
-  const [processos, setProcessos] = useState<ProcessoAdmissao[]>([
-    {
-      id: "1",
-      candidato: "Lucas Almeida",
-      cargo: "Faturista Noturno",
-      etapas: [
-        { id: "e1", titulo: "Documentos Pessoais Entregues", concluido: true },
-        { id: "e2", titulo: "Exame Admissional (ASO) Realizado", concluido: true },
-        { id: "e3", titulo: "Integração de Segurança Realizada", concluido: false },
-        { id: "e4", titulo: "Entrega de EPIs / Uniforme", concluido: false },
-      ]
-    }
-  ])
+  // Estado inicial vazio para garantir que nenhum dado de teste seja exibido
+  const [registros, setRegistros] = useState<AdmissaoRecord[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFuncionario, setSelectedFuncionario] = useState('');
 
-  const toggleEtapa = (processoId: string, etapaId: string) => {
-    setProcessos(processos.map((proc: any) => {
-      if (proc.id === processoId) {
-        const novasEtapas = proc.etapas.map((etp: any) => 
-          etp.id === etapaId ? { ...etp, concluido: !etp.concluido } : etp
-        )
-        return { ...proc, etapas: novasEtapas }
-      }
-      return proc
-    }))
-  }
+  // Lista vazia para funcionários (pronta para ser preenchida via API/Supabase)
+  const funcionariosDisponiveis: { id: string; nome: string; cargo: string }[] = [];
+
+  const handleSalvarAdmissao = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Lógica para salvar a admissão no backend/Supabase
+    setIsModalOpen(false);
+    setSelectedFuncionario('');
+  };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Checklist de Admissão</h1>
-        <p className="text-sm text-slate-500">Acompanhamento das etapas de integração e documentação de novos contratados.</p>
+    <div className="p-6 text-white">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Gestão De Pessoas e DP — Admissões</h1>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+        >
+          + Novo Registo
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {processos.map((proc: any) => {
-          const concluidas = proc.etapas.filter((e: any) => e.concluido).length
-          const total = proc.etapas.length
-          const progresso = Math.round((concluidas / total) * 100)
-
-          return (
-            <div key={proc.id} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">{proc.candidato}</h3>
-                  <p className="text-sm text-blue-600 font-medium">Cargo: {proc.cargo}</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-bold text-slate-500">{progresso}% Concluído</span>
-                  <div className="w-24 bg-slate-200 h-2 rounded-full mt-1 overflow-hidden">
-                    <div className="bg-green-500 h-full transition-all duration-300" style={{ width: `${progresso}%` }}></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-                {proc.etapas.map((etapa: any) => (
-                  <div
-                    key={etapa.id}
-                    onClick={() => toggleEtapa(proc.id, etapa.id)}
-                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${
-                      etapa.concluido 
-                        ? 'bg-green-50/50 border-green-200 text-green-900' 
-                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    {etapa.concluido ? (
-                      <CheckCircle2 className="text-green-600 flex-shrink-0" size={20} />
-                    ) : (
-                      <Circle className="text-slate-300 flex-shrink-0" size={20} />
-                    )}
-                    <span className={`text-sm font-medium ${etapa.concluido ? 'line-through text-slate-500' : ''}`}>
-                      {etapa.titulo}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })}
+      {/* Tabela de Registos */}
+      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-gray-800 text-gray-400 text-sm">
+              <th className="p-4">Funcionário</th>
+              <th className="p-4">Departamento</th>
+              <th className="p-4">Cargo</th>
+              <th className="p-4">Data</th>
+              <th className="p-4">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {registros.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center p-8 text-gray-500">
+                  Nenhum registo de admissão encontrado.
+                </td>
+              </tr>
+            ) : (
+              registros.map((reg) => (
+                <tr key={reg.id} className="border-b border-gray-800/50 hover:bg-gray-800/20">
+                  <td className="p-4">{reg.colaboradorNome}</td>
+                  <td className="p-4">{reg.departamento}</td>
+                  <td className="p-4">{reg.cargo}</td>
+                  <td className="p-4">{reg.dataAdmissao}</td>
+                  <td className="p-4">{reg.status}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* Modal de Novo Registo */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-gray-800 w-full max-w-lg p-6 rounded-xl relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-lg font-semibold mb-4">Novo Registo - ADMISSÕES</h2>
+
+            <form onSubmit={handleSalvarAdmissao} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  FUNCIONÁRIO / COLABORADOR
+                </label>
+                <select
+                  value={selectedFuncionario}
+                  onChange={(e) => setSelectedFuncionario(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="">Selecione um funcionário...</option>
+                  {funcionariosDisponiveis.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.nome} — {f.cargo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
